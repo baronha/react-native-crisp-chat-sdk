@@ -51,7 +51,7 @@ static void InitializeFlipper(UIApplication *application) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
 
-  [CrispSDK configureWithWebsiteID:@"95341f93-d151-4fb4-8ae3-62f22d7bab18"];
+  [CrispSDK configureWithWebsiteID:@"YOUR_WEBSITE_ID"];
 
   return YES;
 }
