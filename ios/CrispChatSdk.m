@@ -13,6 +13,7 @@ RCT_EXTERN_METHOD(setSessionBool:(NSString *)key value:(BOOL)value)
 RCT_EXTERN_METHOD(setSessionInt:(NSString *)key value:(int)value)
 RCT_EXTERN_METHOD(pushSessionEvent:(NSString *)eventName color:(NSInteger *)color)
 RCT_EXTERN_METHOD(resetSession)
-RCT_EXTERN_METHOD(show)
+RCT_EXTERN_METHOD(show: (RCTResponseSenderBlock)callback)
+RCT_EXTERN_METHOD(getSessionId: (RCTResponseSenderBlock)callback)
 
 @end

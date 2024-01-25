@@ -2,6 +2,7 @@ import Crisp
 
 @objc(CrispChatSdk)
 class CrispChatSdk: NSObject {
+    var sessionCallback: Crisp.CallbackToken?
 
     @objc
     func setTokenId(_ id: String) {
@@ -17,6 +18,7 @@ class CrispChatSdk: NSObject {
     func setUserNickname(_ nickname: String) {
         CrispSDK.user.nickname = nickname
     }
+
     @objc
     func setUserPhone(_ phone: String) {
         CrispSDK.user.phone = phone
@@ -58,7 +60,7 @@ class CrispChatSdk: NSObject {
     }
 
     @objc
-    func show() {
+    func show(_ callback: RCTResponseSenderBlock?) {
         DispatchQueue.main.async {
             var viewController = RCTPresentedViewController()
 
@@ -66,13 +68,30 @@ class CrispChatSdk: NSObject {
                 viewController = UIApplication.shared.windows.first?.rootViewController
             }
 
-            viewController?.present(ChatViewController(), animated: true)
+            let chatViewController = ChatViewController()
+
+            viewController?.present(chatViewController, animated: true)
         }
+
+        if let sessionCallback = sessionCallback {
+            CrispSDK.removeCallback(token: sessionCallback)
+        }
+
+        if let callback = callback {
+            sessionCallback = CrispSDK.addCallback(Callback.sessionLoaded { sessionId in
+                callback([sessionId])
+            })
+        }
+    }
+
+    @objc
+    func getSessionId(_ callback: RCTResponseSenderBlock) {
+        let id = CrispSDK.session.identifier ?? ""
+        callback([id])
     }
 
     @objc
     static func requiresMainQueueSetup() -> Bool {
         return true
     }
-
 }

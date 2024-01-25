@@ -26,7 +26,8 @@ type CrispChatSdkType = {
   setSessionInt(key: string, value: number): () => void;
   pushSessionEvent(name: string, color: CrispSessionEventColors): () => void;
   resetSession(): () => void;
-  show(): () => void;
+  getSessionId(callback: (string: string) => void): () => string;
+  show(callback?: (string: string) => void): () => string;
 };
 
 const CrispChatSdk = NativeModules.CrispChatSdk as CrispChatSdkType;
@@ -88,6 +89,9 @@ export const resetSession = () => {
   CrispChatSdk.resetSession();
 };
 
-export const show = () => {
-  CrispChatSdk.show();
+export const getSessionId = (callback: (string: string) => void) =>
+  CrispChatSdk.getSessionId(callback);
+
+export const show = (callback: (string: string) => void = () => {}) => {
+  CrispChatSdk.show(callback);
 };

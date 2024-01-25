@@ -61,16 +61,14 @@ export function setAppDelegateCall(src: string, websiteId: string) {
     tag: 'react-native-crisp-chat-sdk-call',
     src,
     newSrc: `[CrispSDK configureWithWebsiteID:@"${websiteId}"];`,
-    anchor:
-      /- \(BOOL\)application:\(UIApplication \*\)application didFinishLaunchingWithOptions:\(NSDictionary \*\)launchOptions/,
+    anchor: /- \(BOOL\)application:\(UIApplication \*\)application didFinishLaunchingWithOptions:\(NSDictionary \*\)launchOptions/,
     offset: 2,
     comment: '//',
   });
 }
 
 export function setMainConfiguration(main: string, websiteId: string) {
-  const multiDexApp =
-    /public class MainApplication extends MultiDexApplication implements ReactApplication {/g;
+  const multiDexApp = /public class MainApplication extends MultiDexApplication implements ReactApplication {/g;
   let result = main;
   if (!main.match(multiDexApp)) {
     result = result.replace(
@@ -87,13 +85,12 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
     result = result.replace(
       /public class MainApplication extends MultiDexApplication implements ReactApplication {/,
       `import im.crisp.client.Crisp;
-      
+
 public class MainApplication extends MultiDexApplication implements ReactApplication {`
     );
   }
 
-  const cripWebsiteConfig =
-    /Crisp\.configure\(getApplicationContext\(\),"(\w|\d|-)+"\);/g;
+  const cripWebsiteConfig = /Crisp\.configure\(getApplicationContext\(\),"(\w|\d|-)+"\);/g;
   if (!main.match(cripWebsiteConfig)) {
     result = result.replace(
       /super\.onCreate\(\);/,

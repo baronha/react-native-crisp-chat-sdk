@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import CrispChat, {
+import {
   CrispSessionEventColors,
   pushSessionEvent,
   resetSession,
@@ -13,19 +13,26 @@ import CrispChat, {
   setUserEmail,
   setUserNickname,
   setUserPhone,
+  getSessionId,
+  show,
 } from 'react-native-crisp-chat-sdk';
 
 export default function App() {
-  const [showChat, setShowChat] = React.useState<boolean>(false);
-
   const onShowChat = () => {
-    setShowChat(!showChat);
+    show(console.log);
+  };
+
+  const onGetSessionId = () => {
+    getSessionId(console.log);
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity onPress={onGetSessionId}>
+        <Text>Get Session Id</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={onShowChat}>
-        <Text>{showChat ? 'Hide' : 'Show'} Chat</Text>
+        <Text>Show Chat</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setTokenId('123456789')}>
         <Text>Set Token Id</Text>
@@ -50,6 +57,7 @@ export default function App() {
       <TouchableOpacity onPress={() => setUserPhone('+4412345678890')}>
         <Text>Set User Phone</Text>
       </TouchableOpacity>
+
       <TouchableOpacity
         onPress={() =>
           setUserAvatar(
@@ -72,7 +80,6 @@ export default function App() {
       <TouchableOpacity onPress={() => resetSession()}>
         <Text>Reset Session</Text>
       </TouchableOpacity>
-      {showChat && <CrispChat />}
     </View>
   );
 }

@@ -3,6 +3,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+#import <Crisp/Crisp-Swift.h>
 
 #ifdef FB_SONARKIT_ENABLED
 #import <FlipperKit/FlipperClient.h>
@@ -50,7 +51,7 @@ static void InitializeFlipper(UIApplication *application) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
 
-  [CrispSDK configureWithWebsiteID:@"YOUR_WEBSITE_ID"];
+  [CrispSDK configureWithWebsiteID:@"95341f93-d151-4fb4-8ae3-62f22d7bab18"];
 
   return YES;
 }
