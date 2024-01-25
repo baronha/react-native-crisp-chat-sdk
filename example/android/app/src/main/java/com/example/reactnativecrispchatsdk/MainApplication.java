@@ -1,6 +1,5 @@
 package com.example.reactnativecrispchatsdk;
 
-import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
@@ -11,12 +10,13 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import com.reactnativecrispchatsdk.CrispChatSdkModule;
 import com.reactnativecrispchatsdk.CrispChatSdkPackage;
-
-import im.crisp.client.Crisp;
 
 // Fixes multiDex error
 import androidx.multidex.MultiDexApplication;
+
+import im.crisp.client.Crisp;
 
 public class MainApplication extends MultiDexApplication implements ReactApplication {
 
