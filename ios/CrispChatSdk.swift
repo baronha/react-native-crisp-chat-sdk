@@ -1,8 +1,14 @@
 import Crisp
+import Foundation
 
 @objc(CrispChatSdk)
-class CrispChatSdk: NSObject {
+class CrispChatSdk: RCTEventEmitter {
     var sessionCallback: Crisp.CallbackToken?
+    var closeCallback: Crisp.CallbackToken?
+
+    override func supportedEvents() -> [String]! {
+        return [CrispChatEvent.CrispChatClosed.rawValue]
+    }
 
     @objc
     func setTokenId(_ id: String) {
@@ -59,6 +65,10 @@ class CrispChatSdk: NSObject {
         CrispSDK.session.reset()
     }
 
+//    func dispatchEvent(_ eventName: CrispChatEvent) {
+    ////        bridge.eventDispatcher.sendAppEventWithName(eventName, body: "Woot!")
+//    }
+
     @objc
     func show(_ callback: RCTResponseSenderBlock?) {
         DispatchQueue.main.async {
@@ -77,6 +87,14 @@ class CrispChatSdk: NSObject {
             CrispSDK.removeCallback(token: sessionCallback)
         }
 
+        if let closeCallback = closeCallback {
+            CrispSDK.removeCallback(token: closeCallback)
+        }
+
+        closeCallback = CrispSDK.addCallback(.chatClosed {
+            self.sendEvent(withName: CrispChatEvent.CrispChatClosed.rawValue, body: nil)
+        })
+
         if let callback = callback {
             sessionCallback = CrispSDK.addCallback(Callback.sessionLoaded { sessionId in
                 callback([sessionId])
@@ -90,8 +108,16 @@ class CrispChatSdk: NSObject {
         callback([id])
     }
 
-    @objc
-    static func requiresMainQueueSetup() -> Bool {
+//    @objc
+//    static func requiresMainQueueSetup() -> Bool {
+//        return true
+//    }
+
+    override static func requiresMainQueueSetup() -> Bool {
         return true
     }
+}
+
+enum CrispChatEvent: String {
+    case CrispChatClosed
 }

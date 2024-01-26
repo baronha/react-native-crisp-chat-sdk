@@ -21,9 +21,7 @@ import {
 
 export default function App() {
   const onShowChat = () => {
-    show(console.log, () => {
-      console.log('closed');
-    });
+    show(console.log);
   };
 
   const onGetSessionId = () => {
@@ -32,7 +30,7 @@ export default function App() {
 
   React.useEffect(() => {
     const eventClosed = addListener(CrispChatEvent.CrispChatClosed, () => {
-      console.log('closed');
+      console.log('closed!');
     });
 
     return () => {
