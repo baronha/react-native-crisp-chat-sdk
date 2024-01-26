@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NativeModules, View } from 'react-native';
+import { DeviceEventEmitter, NativeModules, View } from 'react-native';
 
 export enum CrispSessionEventColors {
   RED = 0,
@@ -26,9 +26,13 @@ type CrispChatSdkType = {
   setSessionInt(key: string, value: number): () => void;
   pushSessionEvent(name: string, color: CrispSessionEventColors): () => void;
   resetSession(): () => void;
-  getSessionId(callback: (string: string) => void): () => string;
-  show(callback?: (string: string) => void): () => string;
+  getSessionId(onCallback: (string: string) => void): () => string;
+  show(onCallback?: (string: string) => void): () => string;
 };
+
+export enum CrispChatEvent {
+  CrispChatClosed = 'CrispChatClosed',
+}
 
 const CrispChatSdk = NativeModules.CrispChatSdk as CrispChatSdkType;
 
@@ -89,9 +93,16 @@ export const resetSession = () => {
   CrispChatSdk.resetSession();
 };
 
-export const getSessionId = (callback: (string: string) => void) =>
-  CrispChatSdk.getSessionId(callback);
+export const getSessionId = (onCallback: (string: string) => void) =>
+  CrispChatSdk.getSessionId(onCallback);
 
-export const show = (callback: (string: string) => void = () => {}) => {
-  CrispChatSdk.show(callback);
+export const show = (onCallback: (string: string) => void = () => {}) => {
+  CrispChatSdk.show(onCallback);
+};
+
+export const addListener = (
+  event: CrispChatEvent,
+  callback: (data?: any) => void
+) => {
+  return DeviceEventEmitter.addListener(event, callback);
 };

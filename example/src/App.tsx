@@ -15,16 +15,30 @@ import {
   setUserPhone,
   getSessionId,
   show,
+  addListener,
+  CrispChatEvent,
 } from 'react-native-crisp-chat-sdk';
 
 export default function App() {
   const onShowChat = () => {
-    show(console.log);
+    show(console.log, () => {
+      console.log('closed');
+    });
   };
 
   const onGetSessionId = () => {
     getSessionId(console.log);
   };
+
+  React.useEffect(() => {
+    const eventClosed = addListener(CrispChatEvent.CrispChatClosed, () => {
+      console.log('closed');
+    });
+
+    return () => {
+      eventClosed.remove();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>

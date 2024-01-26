@@ -1,5 +1,6 @@
 package com.reactnativecrispchatsdk
 
+import android.app.Activity
 import android.content.Intent
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
@@ -11,6 +12,12 @@ import im.crisp.client.data.SessionEvent
 import im.crisp.client.data.SessionEvent.Color
 import android.os.Handler
 import android.os.Looper
+import com.facebook.react.bridge.ActivityEventListener
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BaseActivityEventListener
+import com.facebook.react.bridge.WritableMap
+import com.facebook.react.modules.core.DeviceEventManagerModule
+import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 
 
 class CrispChatSdkModule(reactContext: ReactApplicationContext) :
@@ -22,6 +29,8 @@ class CrispChatSdkModule(reactContext: ReactApplicationContext) :
 
   private var sessionId: String = ""
   private lateinit var sessionHandler: Handler
+  private val CRISP_CHAT_CLOSED = 1
+
 
   @ReactMethod
   fun setTokenId(id: String) {
@@ -109,20 +118,41 @@ class CrispChatSdkModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun show(callback: Callback) {
+    val activity = currentActivity ?: return
     val context = reactApplicationContext
     val crispIntent = Intent(context, ChatActivity::class.java)
-    crispIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    context.startActivity(crispIntent)
+    context.addActivityEventListener(mActivityEventListener)
 
-    sessionHandler = startSessionInterval(context) { session ->
-      // Thực hiện công việc với session
-      println("Callback with session: $session")
-      this.sessionId = sessionId
-      callback(session)
+    if (callback != null) {
+      sessionHandler = startSessionInterval(context) { session ->
+        this.sessionId = sessionId
+        callback(session)
+      }
+    }
+
+    activity.startActivityForResult(crispIntent, CRISP_CHAT_CLOSED)
+  }
+
+
+  private val mActivityEventListener: ActivityEventListener = object : BaseActivityEventListener() {
+    override fun onActivityResult(
+      activity: Activity,
+      requestCode: Int,
+      resultCode: Int,
+      intent: Intent?
+    ) {
+      if (requestCode == CRISP_CHAT_CLOSED) {
+        reactApplicationContext
+          .getJSModule(RCTDeviceEventEmitter::class.java)
+          .emit(CrispChatEvent.CrispChatClosed.toString(), null)
+
+      }
     }
   }
-}
 
+//  context.addActivityEventListener(mActivityEventListener)
+
+}
 
 
 fun startSessionInterval(context: ReactApplicationContext, callback: (String) -> Unit): Handler {
@@ -144,10 +174,9 @@ fun startSessionInterval(context: ReactApplicationContext, callback: (String) ->
       }
 
       if (elapsedTime < timeout && !isCallbackInvoked) {
-        // Nếu chưa đạt tới timeout và chưa gọi callback, lặp lại sau mỗi interval
         elapsedTime += interval
         handler.postDelayed(this, interval)
-      }else{
+      } else {
         cancelHandler(handler)
       }
     }
@@ -161,4 +190,8 @@ fun startSessionInterval(context: ReactApplicationContext, callback: (String) ->
 
 fun cancelHandler(handler: Handler) {
   handler.removeCallbacksAndMessages(null)
+}
+
+enum class CrispChatEvent {
+  CrispChatClosed
 }
