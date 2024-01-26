@@ -2,7 +2,6 @@ package com.reactnativecrispchatsdk
 
 import android.content.Intent
 import com.facebook.react.bridge.Callback
-import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
@@ -22,6 +21,7 @@ class CrispChatSdkModule(reactContext: ReactApplicationContext) :
   }
 
   private var sessionId: String = ""
+  private lateinit var sessionHandler: Handler
 
   @ReactMethod
   fun setTokenId(id: String) {
@@ -104,43 +104,61 @@ class CrispChatSdkModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun getSessionId(callback: Callback) {
     val context = reactApplicationContext
-//    callback(Crisp.getSessionIdentifier(context))
     callback(this.sessionId)
-
-
-//    println("Crisp.getSessionIdentifier(context) ${Crisp.getSessionIdentifier(context)}")
   }
 
   @ReactMethod
   fun show(callback: Callback) {
     val context = reactApplicationContext
-
-
-
-    Handler(Looper.getMainLooper()).postDelayed({
-//      println("Crisp.getSessionIdentifier(context) ${}")
-      this.sessionId = Crisp.getSessionIdentifier(context).toString()
-
-    }, 3000)
-
-//    callback(Crisp.getSessionIdentifier(context))
     val crispIntent = Intent(context, ChatActivity::class.java)
     crispIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-
     context.startActivity(crispIntent)
+
+    sessionHandler = startSessionInterval(context) { session ->
+      // Thực hiện công việc với session
+      println("Callback with session: $session")
+      this.sessionId = sessionId
+      callback(session)
+    }
+  }
+}
+
+
+
+fun startSessionInterval(context: ReactApplicationContext, callback: (String) -> Unit): Handler {
+  val interval = 1000L // 1s
+  val timeout = 10000L // 10s
+  val handler = Handler(Looper.getMainLooper())
+  var elapsedTime = 0L
+  var isCallbackInvoked = false
+
+  val runnable = object : Runnable {
+    override fun run() {
+      val session = Crisp.getSessionIdentifier(context)
+
+      if (session != null && !isCallbackInvoked) {
+        // Có sessionId và chưa gọi callback trước đó
+        callback(session.toString())
+        isCallbackInvoked = true
+        cancelHandler(handler)
+      }
+
+      if (elapsedTime < timeout && !isCallbackInvoked) {
+        // Nếu chưa đạt tới timeout và chưa gọi callback, lặp lại sau mỗi interval
+        elapsedTime += interval
+        handler.postDelayed(this, interval)
+      }else{
+        cancelHandler(handler)
+      }
+    }
   }
 
-//  private val mActivityEventListener: ActivityEventListener = object : BaseActivityEventListener() {
-//    override fun onActivityResult(
-//      activity: Activity,
-//      requestCode: Int,
-//      resultCode: Int,
-//      intent: Intent?
-//    ) {
-//
-//
-//      println("requestCode:  ${requestCode}")
-//    }
-//  }
+  // Bắt đầu interval
+  handler.postDelayed(runnable, interval)
+
+  return handler
+}
+
+fun cancelHandler(handler: Handler) {
+  handler.removeCallbacksAndMessages(null)
 }
