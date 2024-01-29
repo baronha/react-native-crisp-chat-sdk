@@ -1,11 +1,5 @@
 import * as React from 'react';
-import {
-  DeviceEventEmitter,
-  NativeEventEmitter,
-  NativeModules,
-  Platform,
-  View,
-} from 'react-native';
+import { NativeEventEmitter, NativeModules, View } from 'react-native';
 
 export enum CrispSessionEventColors {
   RED = 0,
@@ -111,15 +105,4 @@ const CrispChatEmitter = new NativeEventEmitter(NativeModules.CrispChatSdk);
 export const addListener = (
   event: CrispChatEvent,
   callback: (data?: any) => void
-) => {
-  if (Platform.OS === 'android') {
-    return DeviceEventEmitter.addListener(event, callback);
-  }
-  return CrispChatEmitter.addListener(event, callback);
-
-  //   return Platform.select({
-  //     ios: () => ,
-  //     android: () => ,
-  //   });
-  // };
-};
+) => CrispChatEmitter.addListener(event, callback);
