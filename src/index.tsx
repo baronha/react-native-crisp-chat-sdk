@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {
   DeviceEventEmitter,
-  EventSubscriptionVendor,
   NativeEventEmitter,
   NativeModules,
   Platform,
