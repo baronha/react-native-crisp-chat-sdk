@@ -78,9 +78,13 @@ class CrispChatSdk: RCTEventEmitter {
                 viewController = UIApplication.shared.windows.first?.rootViewController
             }
 
-            let chatViewController = ChatViewController()
+            if let viewController {
+                let chatViewController = ChatViewController()
 
-            viewController?.present(chatViewController, animated: true)
+                chatViewController.modalTransitionStyle = .coverVertical
+                chatViewController.modalPresentationStyle = .fullScreen
+                viewController.present(chatViewController, animated: true)
+            }
         }
 
         if let sessionCallback = sessionCallback {
