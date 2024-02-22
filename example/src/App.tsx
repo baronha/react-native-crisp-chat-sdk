@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-  CrispSessionEventColors,
   pushSessionEvent,
   resetSession,
   setSessionSegment,
@@ -17,6 +16,7 @@ import {
   show,
   addListener,
   CrispChatEvent,
+  CrispSessionEventColors,
 } from 'react-native-crisp-chat-sdk';
 
 export default function App() {
@@ -101,5 +101,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#000',
   },
 });

@@ -1,28 +1,28 @@
 {
   "name": "react-native-crisp-chat-sdk-example",
-  "description": "Example app for react-native-crisp-chat-sdk",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-native-packager-cache-* && rm -rf $TMPDIR/metro-bundler-cache-* && rm -rf node_modules/ && rm -rf ios/build && rm -rf ios/pods && rm -rf android/build && yarn build",
-    "build": "yarn && cd ios && pod install",
     "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "start": "react-native start"
+    "ios": "react-native run-ios --simulator \"iPhone 15 Pro\"",
+    "start": "react-native start",
+    "build:android": "cd android && ./gradlew assembleDebug --no-daemon --console=plain -PreactNativeArchitectures=arm64-v8a",
+    "build:ios": "cd ios && xcodebuild -workspace CrispChatSdkExample.xcworkspace -scheme CrispChatSdkExample -configuration Debug -sdk iphonesimulator CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ GCC_OPTIMIZATION_LEVEL=0 GCC_PRECOMPILE_PREFIX_HEADER=YES ASSETCATALOG_COMPILER_OPTIMIZATION=time DEBUG_INFORMATION_FORMAT=dwarf COMPILER_INDEX_STORE_ENABLE=NO"
   },
   "dependencies": {
-    "react": "17.0.1",
-    "react-native": "0.64.1"
+    "react": "18.2.0",
+    "react-native": "0.73.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
-    "@babel/runtime": "^7.12.5",
-    "@react-native-community/eslint-config": "^2.0.0",
-    "babel-jest": "^26.6.3",
-    "babel-plugin-module-resolver": "^4.0.0",
-    "eslint": "7.14.0",
-    "jest": "^26.6.3",
-    "metro-react-native-babel-preset": "^0.64.0",
-    "react-test-renderer": "17.0.1"
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native/babel-preset": "0.73.21",
+    "@react-native/metro-config": "0.73.5",
+    "@react-native/typescript-config": "0.73.1",
+    "babel-plugin-module-resolver": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
