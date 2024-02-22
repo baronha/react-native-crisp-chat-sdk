@@ -44,6 +44,6 @@ class MainApplication : MultiDexApplication(), ReactApplication {
       load()
     }
     ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
-    Crisp.configure(getApplicationContext(),"95341f93-d151-4fb4-8ae3-62f22d7bab18");
+    Crisp.configure(getApplicationContext(),"");
   }
 }
