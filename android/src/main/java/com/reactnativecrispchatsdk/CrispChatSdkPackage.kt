@@ -8,10 +8,11 @@ import com.facebook.react.uimanager.ViewManager
 
 class CrispChatSdkPackage : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-      return listOf<NativeModule>(CrispChatSdkModule(reactContext))
+        return listOf<NativeModule>(CrispChatSdkModule(reactContext))
     }
 
+
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-      return emptyList<ViewManager<*, *>>()
+        return emptyList()
     }
 }

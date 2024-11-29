@@ -1,6 +1,5 @@
 package com.crispchatsdkexample
 
-import android.app.Application
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -21,7 +20,7 @@ class MainApplication : MultiDexApplication(), ReactApplication {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
               // Packages that cannot be autolinked yet can be added manually here, for example:
-              // add(MyReactNativePackage())
+//               add(CrispChatSdkPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"

@@ -1,6 +1,5 @@
 package com.reactnativecrispchatsdk
 
-import android.app.Activity
 import android.content.Intent
 import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
@@ -10,9 +9,6 @@ import im.crisp.client.external.ChatActivity
 import im.crisp.client.external.Crisp
 import im.crisp.client.external.data.SessionEvent
 import im.crisp.client.external.data.SessionEvent.Color
-import android.os.Handler
-import com.facebook.react.bridge.ActivityEventListener
-import com.facebook.react.bridge.BaseActivityEventListener
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
 import im.crisp.client.external.EventsCallback
 import im.crisp.client.external.data.message.Message
@@ -121,7 +117,6 @@ class CrispChatSdkModule(reactContext: ReactApplicationContext) :
 
     crispCallback = object : EventsCallback {
       override fun onSessionLoaded(sessionId: String) {
-        println("load session: $sessionId")
         callback(sessionId)
       }
 
