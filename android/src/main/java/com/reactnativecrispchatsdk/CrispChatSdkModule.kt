@@ -6,18 +6,16 @@ import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import im.crisp.client.ChatActivity
-import im.crisp.client.Crisp
-import im.crisp.client.data.SessionEvent
-import im.crisp.client.data.SessionEvent.Color
+import im.crisp.client.external.ChatActivity
+import im.crisp.client.external.Crisp
+import im.crisp.client.external.data.SessionEvent
+import im.crisp.client.external.data.SessionEvent.Color
 import android.os.Handler
-import android.os.Looper
 import com.facebook.react.bridge.ActivityEventListener
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BaseActivityEventListener
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
+import im.crisp.client.external.EventsCallback
+import im.crisp.client.external.data.message.Message
 
 
 class CrispChatSdkModule(reactContext: ReactApplicationContext) :
@@ -28,8 +26,7 @@ class CrispChatSdkModule(reactContext: ReactApplicationContext) :
   }
 
   private var sessionId: String = ""
-  private lateinit var sessionHandler: Handler
-  private val CRISP_CHAT_CLOSED = 1
+  private var crispCallback: EventsCallback? = null
 
 
   @ReactMethod
@@ -118,78 +115,44 @@ class CrispChatSdkModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun show(callback: Callback) {
-    val activity = currentActivity ?: return
     val context = reactApplicationContext
     val crispIntent = Intent(context, ChatActivity::class.java)
-    context.addActivityEventListener(mActivityEventListener)
+    crispIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-    if (callback != null) {
-      sessionHandler = startSessionInterval(context) { session ->
-        this.sessionId = sessionId
-        callback(session)
+    crispCallback = object : EventsCallback {
+      override fun onSessionLoaded(sessionId: String) {
+        println("load session: $sessionId")
+        callback(sessionId)
       }
-    }
 
-    activity.startActivityForResult(crispIntent, CRISP_CHAT_CLOSED)
-  }
+      override fun onChatOpened() {
 
+      }
 
-  private val mActivityEventListener: ActivityEventListener = object : BaseActivityEventListener() {
-    override fun onActivityResult(
-      activity: Activity,
-      requestCode: Int,
-      resultCode: Int,
-      intent: Intent?
-    ) {
-      if (requestCode == CRISP_CHAT_CLOSED) {
+      override fun onChatClosed() {
         reactApplicationContext
           .getJSModule(RCTDeviceEventEmitter::class.java)
           .emit(CrispChatEvent.CrispChatClosed.toString(), null)
+        crispCallback?.let {
+          Crisp.removeCallback(it)
+          crispCallback = null
+        }
+      }
 
+      override fun onMessageSent(p0: Message) {
+        //
+      }
+
+      override fun onMessageReceived(p0: Message) {
+        //
       }
     }
+
+    crispCallback?.let { Crisp.addCallback(it) }
+
+    // start activity
+    context.startActivity(crispIntent)
   }
-
-//  context.addActivityEventListener(mActivityEventListener)
-
-}
-
-
-fun startSessionInterval(context: ReactApplicationContext, callback: (String) -> Unit): Handler {
-  val interval = 1000L // 1s
-  val timeout = 10000L // 10s
-  val handler = Handler(Looper.getMainLooper())
-  var elapsedTime = 0L
-  var isCallbackInvoked = false
-
-  val runnable = object : Runnable {
-    override fun run() {
-      val session = Crisp.getSessionIdentifier(context)
-
-      if (session != null && !isCallbackInvoked) {
-        // Có sessionId và chưa gọi callback trước đó
-        callback(session.toString())
-        isCallbackInvoked = true
-        cancelHandler(handler)
-      }
-
-      if (elapsedTime < timeout && !isCallbackInvoked) {
-        elapsedTime += interval
-        handler.postDelayed(this, interval)
-      } else {
-        cancelHandler(handler)
-      }
-    }
-  }
-
-  // Bắt đầu interval
-  handler.postDelayed(runnable, interval)
-
-  return handler
-}
-
-fun cancelHandler(handler: Handler) {
-  handler.removeCallbacksAndMessages(null)
 }
 
 enum class CrispChatEvent {
