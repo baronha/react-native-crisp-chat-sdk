@@ -9,11 +9,10 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
-import com.facebook.react.flipper.ReactNativeFlipper
 import com.facebook.soloader.SoLoader
 
 import androidx.multidex.MultiDexApplication;
-import im.crisp.client.Crisp;
+import im.crisp.client.external.Crisp;
 
 class MainApplication : MultiDexApplication(), ReactApplication {
 
@@ -34,7 +33,7 @@ class MainApplication : MultiDexApplication(), ReactApplication {
       }
 
   override val reactHost: ReactHost
-    get() = getDefaultReactHost(this.applicationContext, reactNativeHost)
+    get() = getDefaultReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
     super.onCreate()
@@ -43,7 +42,6 @@ class MainApplication : MultiDexApplication(), ReactApplication {
       // If you opted-in for the New Architecture, we load the native entry point for this app.
       load()
     }
-    ReactNativeFlipper.initializeFlipper(this, reactNativeHost.reactInstanceManager)
-    Crisp.configure(getApplicationContext(),"");
+    Crisp.configure(applicationContext,"95341f93-d151-4fb4-8ae3-62f22d7bab18");
   }
 }
